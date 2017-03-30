@@ -6,23 +6,25 @@ import (
 )
 
 func TestNewLogger(t *testing.T) {
-	Log0Info("0:%v", "Info")
+	l1 := NewLogger(0, "", "1-%v.log")
+	l2 := NewLogger(0, "", "2-%v.log")
+	l1.Log0Info("0:%v", "Info")
 
-	SetPrefix("prefix")
-	Log1Warn("1:Warning")
+	l1.SetPrefix("prefix")
+	l1.Log1Warn("1:Warning")
 
-	SetPrefix("")
-	Log2Error("2:Error")
-	Log3Fatal("3:Fatal")
+	l1.SetPrefix("")
+	l1.Log2Error("2:Error")
+	l1.Log3Fatal("3:Fatal")
 
-	SetFile("2016-01-02.log")
-	Log4Trace("4:Trace")
-	SetFile("2016-01-03.log")
-	Log5NoFormat("5:NoFormat")
+	l2.SetFile("2016-01-02.log")
+	l2.Log4Trace("4:Trace")
+	l2.SetFile("2016-01-03.log")
+	l2.Log5NoFormat("5:NoFormat")
 
-	SetFlag(log.Ltime)
-	Printf("%v", "Printf")
+	l2.SetFlag(log.Ltime)
+	l2.Printf("%v", "Printf")
 
-	SetFlag(log.Ltime | log.Lshortfile)
-	Println("Println")
+	l2.SetFlag(log.Ltime | log.Lshortfile)
+	l2.Println("Println")
 }

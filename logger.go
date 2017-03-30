@@ -40,11 +40,9 @@ type Logger struct {
 	lock       sync.Mutex
 }
 
-// var ll = NewLogger(LoggerLevelInfo, "", "/tmp/%v.log")
-var ll = NewLogger(LoggerLevelInfo, "", "")
-
 // NewLogger ...
-// eg: prefix="demo", file="./log/%v.log"
+// eg: ll := NewLogger(0, "", "")
+// eg: ll := NewLogger(logger.LoggerLevelWarning, "demo", "./log/%v.log")
 func NewLogger(level int, prefix, file string) *Logger {
 
 	if prefix != "" {
@@ -134,67 +132,67 @@ func (o *Logger) LogCalldepth(calldepth int, level int, msg ...interface{}) {
 }
 
 // SetFile ...
-func SetFile(fileReg string) {
+func (o *Logger) SetFile(fileReg string) {
 	os.MkdirAll(filepath.Dir(fileReg), 0755)
-	ll.fileReg = fileReg
-	ll.nextLogFile()
+	o.fileReg = fileReg
+	o.nextLogFile()
 }
 
 // SetFlag ...
-func SetFlag(flag int) {
-	ll.l.SetFlags(flag)
+func (o *Logger) SetFlag(flag int) {
+	o.l.SetFlags(flag)
 }
 
 // SetLevel ...
-func SetLevel(level int) {
-	ll.level = level
+func (o *Logger) SetLevel(level int) {
+	o.level = level
 }
 
 // SetPrefix ...
-func SetPrefix(prefix string) {
+func (o *Logger) SetPrefix(prefix string) {
 	if prefix != "" {
-		ll.prefix = "[" + prefix + "] "
+		o.prefix = "[" + prefix + "] "
 	} else {
-		ll.prefix = prefix
+		o.prefix = prefix
 	}
 }
 
 // Println ...
-func Println(v ...interface{}) {
-	ll.LogCalldepth(3, LoggerLevelNoFormat, fmt.Sprintln(v...))
+func (o *Logger) Println(v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevelNoFormat, fmt.Sprintln(v...))
 }
 
 // Printf ...
-func Printf(format string, v ...interface{}) {
-	ll.LogCalldepth(3, LoggerLevelNoFormat, fmt.Sprintf(format, v...))
+func (o *Logger) Printf(format string, v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevelNoFormat, fmt.Sprintf(format, v...))
 }
 
 // Log0Info ...
-func Log0Info(format string, v ...interface{}) {
-	ll.LogCalldepth(3, LoggerLevelInfo, fmt.Sprintf(format, v...))
+func (o *Logger) Log0Info(format string, v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevelInfo, fmt.Sprintf(format, v...))
 }
 
 // Log1Warn ...
-func Log1Warn(format string, v ...interface{}) {
-	ll.LogCalldepth(3, LoggerLevelWarning, fmt.Sprintf(format, v...))
+func (o *Logger) Log1Warn(format string, v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevelWarning, fmt.Sprintf(format, v...))
 }
 
 // Log2Error ...
-func Log2Error(format string, v ...interface{}) {
-	ll.LogCalldepth(3, LoggerLevelError, fmt.Sprintf(format, v...))
+func (o *Logger) Log2Error(format string, v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevelError, fmt.Sprintf(format, v...))
 }
 
 // Log3Fatal ...
-func Log3Fatal(format string, v ...interface{}) {
-	ll.LogCalldepth(3, LoggerLevelFatal, fmt.Sprintf(format, v...))
+func (o *Logger) Log3Fatal(format string, v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevelFatal, fmt.Sprintf(format, v...))
 }
 
 // Log4Trace ...
-func Log4Trace(format string, v ...interface{}) {
-	ll.LogCalldepth(3, LoggerLevelTrace, fmt.Sprintf(format, v...))
+func (o *Logger) Log4Trace(format string, v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevelTrace, fmt.Sprintf(format, v...))
 }
 
 // Log5NoFormat ...
-func Log5NoFormat(format string, v ...interface{}) {
-	ll.LogCalldepth(3, LoggerLevelNoFormat, fmt.Sprintf(format, v...))
+func (o *Logger) Log5NoFormat(format string, v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevelNoFormat, fmt.Sprintf(format, v...))
 }
