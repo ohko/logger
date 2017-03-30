@@ -6,7 +6,6 @@ import (
 )
 
 func TestNewLogger(t *testing.T) {
-	// ll = NewLogger(0, "demo", "%v.log")
 	Log0Info("0:%v", "Info")
 
 	SetPrefix("prefix")
@@ -15,7 +14,10 @@ func TestNewLogger(t *testing.T) {
 	SetPrefix("")
 	Log2Error("2:Error")
 	Log3Fatal("3:Fatal")
+
+	SetFile("2016-01-02.log")
 	Log4Trace("4:Trace")
+	SetFile("2016-01-03.log")
 	Log5NoFormat("5:NoFormat")
 
 	SetFlag(log.Ltime)

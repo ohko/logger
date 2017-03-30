@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -70,9 +71,14 @@ func NewLogger(level int, prefix, file string) *Logger {
 }
 
 func (o *Logger) nextLogFile() {
-	_f := fmt.Sprintf(o.fileReg, time.Now().Format("2006-01-02"))
+	var _f string
+	if strings.Contains(o.fileReg, "%v") {
+		_f = fmt.Sprintf(o.fileReg, time.Now().Format("2006-01-02"))
+	} else {
+		_f = o.fileReg
+	}
 	// 跨日
-	if o.fileName != "" && _f != o.fileName {
+	if o.fileReg != "" && _f != o.fileName {
 		o.lock.Lock()
 		defer o.lock.Unlock()
 
@@ -81,14 +87,15 @@ func (o *Logger) nextLogFile() {
 		o.fileName = _f
 		logFile, err := os.OpenFile(_f, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0644)
 		if err == nil {
-			// 先关闭前一个日志
-			o.fileHandle.Close()
+			if o.fileHandle != nil {
+				// 先关闭前一个日志
+				o.fileHandle.Close()
 
-			// TODO: 压缩前一月日志
-			// 压缩前一天日志
-			exec.Command("tar", "czf", oldFileName+".tar.gz", oldFileName).Run()
-			os.Remove(oldFileName)
-
+				// TODO: 压缩前一月日志
+				// 压缩前一天日志
+				exec.Command("tar", "czf", oldFileName+".tar.gz", oldFileName).Run()
+				os.Remove(oldFileName)
+			}
 			// 赋值新日志
 			o.fileHandle = logFile
 			o.l.SetOutput(io.MultiWriter(logFile, os.Stdout))
@@ -124,6 +131,13 @@ func (o *Logger) LogCalldepth(calldepth int, level int, msg ...interface{}) {
 	}
 
 	o.l.Output(calldepth, fmt.Sprint(msg...)+"\033[m")
+}
+
+// SetFile ...
+func SetFile(fileReg string) {
+	os.MkdirAll(filepath.Dir(fileReg), 0755)
+	ll.fileReg = fileReg
+	ll.nextLogFile()
 }
 
 // SetFlag ...
