@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	// LoggerLevelInfo 一般信息
-	LoggerLevelInfo = iota
+	// LoggerLevelDebug 测试信息
+	LoggerLevelDebug = iota
 	// LoggerLevelWarning 警告信息
 	LoggerLevelWarning
 	// LoggerLevelError 错误信息
@@ -46,7 +46,7 @@ type Logger struct {
 func NewLogger(level int, prefix, file string) *Logger {
 
 	if prefix != "" {
-		prefix = "[" + prefix + "] "
+		prefix = "[" + prefix + "]"
 	}
 
 	var l *log.Logger
@@ -110,7 +110,7 @@ func (o *Logger) LogCalldepth(calldepth int, level int, msg ...interface{}) {
 	o.lock.Lock()
 	defer o.lock.Unlock()
 	switch level {
-	case LoggerLevelInfo:
+	case LoggerLevelDebug:
 		o.l.SetPrefix("\033[32m" + o.prefix)
 	case LoggerLevelWarning:
 		o.l.SetPrefix("\033[33m" + o.prefix)
@@ -167,32 +167,50 @@ func (o *Logger) Printf(format string, v ...interface{}) {
 	o.LogCalldepth(3, LoggerLevelNoFormat, fmt.Sprintf(format, v...))
 }
 
-// Log0Info ...
-func (o *Logger) Log0Info(format string, v ...interface{}) {
-	o.LogCalldepth(3, LoggerLevelInfo, fmt.Sprintf(format, v...))
+// Log0Debug ...
+func (o *Logger) Log0Debug(format string, v ...interface{}) {
+	if !strings.Contains(format, "%v") && len(v) > 0 {
+		format += strings.Repeat("%v", len(v))
+	}
+	o.LogCalldepth(3, LoggerLevelDebug, fmt.Sprintf(format, v...))
 }
 
 // Log1Warn ...
 func (o *Logger) Log1Warn(format string, v ...interface{}) {
+	if !strings.Contains(format, "%v") && len(v) > 0 {
+		format += strings.Repeat("%v", len(v))
+	}
 	o.LogCalldepth(3, LoggerLevelWarning, fmt.Sprintf(format, v...))
 }
 
 // Log2Error ...
 func (o *Logger) Log2Error(format string, v ...interface{}) {
+	if !strings.Contains(format, "%v") && len(v) > 0 {
+		format += strings.Repeat("%v", len(v))
+	}
 	o.LogCalldepth(3, LoggerLevelError, fmt.Sprintf(format, v...))
 }
 
 // Log3Fatal ...
 func (o *Logger) Log3Fatal(format string, v ...interface{}) {
+	if !strings.Contains(format, "%v") && len(v) > 0 {
+		format += strings.Repeat("%v", len(v))
+	}
 	o.LogCalldepth(3, LoggerLevelFatal, fmt.Sprintf(format, v...))
 }
 
 // Log4Trace ...
 func (o *Logger) Log4Trace(format string, v ...interface{}) {
+	if !strings.Contains(format, "%v") && len(v) > 0 {
+		format += strings.Repeat("%v", len(v))
+	}
 	o.LogCalldepth(3, LoggerLevelTrace, fmt.Sprintf(format, v...))
 }
 
 // Log5NoFormat ...
 func (o *Logger) Log5NoFormat(format string, v ...interface{}) {
+	if !strings.Contains(format, "%v") && len(v) > 0 {
+		format += strings.Repeat("%v", len(v))
+	}
 	o.LogCalldepth(3, LoggerLevelNoFormat, fmt.Sprintf(format, v...))
 }

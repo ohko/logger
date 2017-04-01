@@ -8,7 +8,7 @@ import (
 func TestNewLogger(t *testing.T) {
 	l1 := NewLogger(0, "", "1-%v.log")
 	l2 := NewLogger(0, "", "2-%v.log")
-	l1.Log0Info("0:%v", "Info")
+	l1.Log0Debug("0:%v", "Info")
 
 	l1.SetPrefix("prefix")
 	l1.Log1Warn("1:Warning")
