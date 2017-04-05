@@ -24,7 +24,7 @@ const (
 	// LoggerLevel4Trace 打印信息
 	LoggerLevel4Trace
 	// LoggerLevel5NoFormat 无格式信息
-	LoggerLevel5NoFormat
+	LoggerLevel5NoColor
 	// LoggerLevel6Off 关闭信息
 	LoggerLevel6Off
 )
@@ -120,7 +120,7 @@ func (o *Logger) LogCalldepth(calldepth int, level int, msg ...interface{}) {
 		o.l.SetPrefix("\033[31;1;5;7m" + o.prefix)
 	case LoggerLevel4Trace:
 		o.l.SetPrefix("\033[37m" + o.prefix)
-	case LoggerLevel5NoFormat:
+	case LoggerLevel5NoColor:
 		o.l.SetPrefix(o.prefix)
 		o.l.Output(calldepth, fmt.Sprint(msg...))
 		return
@@ -159,12 +159,12 @@ func (o *Logger) SetPrefix(prefix string) {
 
 // Println ...
 func (o *Logger) Println(v ...interface{}) {
-	o.LogCalldepth(3, LoggerLevel5NoFormat, fmt.Sprintln(v...))
+	o.LogCalldepth(3, LoggerLevel5NoColor, fmt.Sprintln(v...))
 }
 
 // Printf ...
 func (o *Logger) Printf(format string, v ...interface{}) {
-	o.LogCalldepth(3, LoggerLevel5NoFormat, fmt.Sprintf(format, v...))
+	o.LogCalldepth(3, LoggerLevel5NoColor, fmt.Sprintf(format, v...))
 }
 
 // Log0Debug ...
@@ -208,9 +208,9 @@ func (o *Logger) Log4Trace(format string, v ...interface{}) {
 }
 
 // Log5NoFormat ...
-func (o *Logger) Log5NoFormat(format string, v ...interface{}) {
+func (o *Logger) Log5NoColor(format string, v ...interface{}) {
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
-	o.LogCalldepth(3, LoggerLevel5NoFormat, fmt.Sprintf(format, v...))
+	o.LogCalldepth(3, LoggerLevel5NoColor, fmt.Sprintf(format, v...))
 }

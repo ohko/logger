@@ -20,7 +20,7 @@ func TestNewLogger(t *testing.T) {
 	l2.SetFile("2016-01-02.log")
 	l2.Log4Trace("4:Trace")
 	l2.SetFile("2016-01-03.log")
-	l2.Log5NoFormat("5:NoFormat")
+	l2.Log5NoColor("5:NoFormat")
 
 	l2.SetFlag(log.Ltime)
 	l2.Printf("%v", "Printf")
