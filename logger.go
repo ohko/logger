@@ -13,20 +13,20 @@ import (
 )
 
 const (
-	// LoggerLevelDebug 测试信息
-	LoggerLevelDebug = iota
-	// LoggerLevelWarning 警告信息
-	LoggerLevelWarning
-	// LoggerLevelError 错误信息
-	LoggerLevelError
-	// LoggerLevelFatal 严重信息
-	LoggerLevelFatal
-	// LoggerLevelTrace 打印信息
-	LoggerLevelTrace
-	// LoggerLevelNoFormat 无格式信息
-	LoggerLevelNoFormat
-	// LoggerLevelOff 关闭信息
-	LoggerLevelOff
+	// LoggerLevel0Debug 测试信息
+	LoggerLevel0Debug = iota
+	// LoggerLevel1Warning 警告信息
+	LoggerLevel1Warning
+	// LoggerLevel2Error 错误信息
+	LoggerLevel2Error
+	// LoggerLevel3Fatal 严重信息
+	LoggerLevel3Fatal
+	// LoggerLevel4Trace 打印信息
+	LoggerLevel4Trace
+	// LoggerLevel5NoFormat 无格式信息
+	LoggerLevel5NoFormat
+	// LoggerLevel6Off 关闭信息
+	LoggerLevel6Off
 )
 
 // Logger ...
@@ -110,17 +110,17 @@ func (o *Logger) LogCalldepth(calldepth int, level int, msg ...interface{}) {
 	o.lock.Lock()
 	defer o.lock.Unlock()
 	switch level {
-	case LoggerLevelDebug:
+	case LoggerLevel0Debug:
 		o.l.SetPrefix("\033[32m" + o.prefix)
-	case LoggerLevelWarning:
+	case LoggerLevel1Warning:
 		o.l.SetPrefix("\033[33m" + o.prefix)
-	case LoggerLevelError:
+	case LoggerLevel2Error:
 		o.l.SetPrefix("\033[31m" + o.prefix)
-	case LoggerLevelFatal:
+	case LoggerLevel3Fatal:
 		o.l.SetPrefix("\033[31;1;5;7m" + o.prefix)
-	case LoggerLevelTrace:
+	case LoggerLevel4Trace:
 		o.l.SetPrefix("\033[37m" + o.prefix)
-	case LoggerLevelNoFormat:
+	case LoggerLevel5NoFormat:
 		o.l.SetPrefix(o.prefix)
 		o.l.Output(calldepth, fmt.Sprint(msg...))
 		return
@@ -159,12 +159,12 @@ func (o *Logger) SetPrefix(prefix string) {
 
 // Println ...
 func (o *Logger) Println(v ...interface{}) {
-	o.LogCalldepth(3, LoggerLevelNoFormat, fmt.Sprintln(v...))
+	o.LogCalldepth(3, LoggerLevel5NoFormat, fmt.Sprintln(v...))
 }
 
 // Printf ...
 func (o *Logger) Printf(format string, v ...interface{}) {
-	o.LogCalldepth(3, LoggerLevelNoFormat, fmt.Sprintf(format, v...))
+	o.LogCalldepth(3, LoggerLevel5NoFormat, fmt.Sprintf(format, v...))
 }
 
 // Log0Debug ...
@@ -172,7 +172,7 @@ func (o *Logger) Log0Debug(format string, v ...interface{}) {
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
-	o.LogCalldepth(3, LoggerLevelDebug, fmt.Sprintf(format, v...))
+	o.LogCalldepth(3, LoggerLevel0Debug, fmt.Sprintf(format, v...))
 }
 
 // Log1Warn ...
@@ -180,7 +180,7 @@ func (o *Logger) Log1Warn(format string, v ...interface{}) {
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
-	o.LogCalldepth(3, LoggerLevelWarning, fmt.Sprintf(format, v...))
+	o.LogCalldepth(3, LoggerLevel1Warning, fmt.Sprintf(format, v...))
 }
 
 // Log2Error ...
@@ -188,7 +188,7 @@ func (o *Logger) Log2Error(format string, v ...interface{}) {
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
-	o.LogCalldepth(3, LoggerLevelError, fmt.Sprintf(format, v...))
+	o.LogCalldepth(3, LoggerLevel2Error, fmt.Sprintf(format, v...))
 }
 
 // Log3Fatal ...
@@ -196,7 +196,7 @@ func (o *Logger) Log3Fatal(format string, v ...interface{}) {
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
-	o.LogCalldepth(3, LoggerLevelFatal, fmt.Sprintf(format, v...))
+	o.LogCalldepth(3, LoggerLevel3Fatal, fmt.Sprintf(format, v...))
 }
 
 // Log4Trace ...
@@ -204,7 +204,7 @@ func (o *Logger) Log4Trace(format string, v ...interface{}) {
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
-	o.LogCalldepth(3, LoggerLevelTrace, fmt.Sprintf(format, v...))
+	o.LogCalldepth(3, LoggerLevel4Trace, fmt.Sprintf(format, v...))
 }
 
 // Log5NoFormat ...
@@ -212,5 +212,5 @@ func (o *Logger) Log5NoFormat(format string, v ...interface{}) {
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
-	o.LogCalldepth(3, LoggerLevelNoFormat, fmt.Sprintf(format, v...))
+	o.LogCalldepth(3, LoggerLevel5NoFormat, fmt.Sprintf(format, v...))
 }
