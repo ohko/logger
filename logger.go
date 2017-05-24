@@ -38,6 +38,9 @@ type Logger struct {
 	level      int
 	prefix     string
 	lock       sync.Mutex
+
+	// 是否在记录日志
+	logged bool
 }
 
 // NewLogger ...
@@ -65,7 +68,7 @@ func NewLogger(level int, prefix, file string) *Logger {
 		l = log.New(os.Stdout, prefix, log.Ltime|log.Lshortfile)
 	}
 
-	return &Logger{l: l, fileName: fileName, fileReg: file, fileHandle: logFile, level: level, prefix: prefix}
+	return &Logger{l: l, fileName: fileName, fileReg: file, fileHandle: logFile, level: level, prefix: prefix, logged: true}
 }
 
 func (o *Logger) nextLogFile() {
@@ -103,6 +106,9 @@ func (o *Logger) nextLogFile() {
 
 // LogCalldepth ...
 func (o *Logger) LogCalldepth(calldepth int, level int, msg ...interface{}) {
+	if !o.logged {
+		return
+	}
 	if level < o.level {
 		return
 	}
@@ -159,16 +165,25 @@ func (o *Logger) SetPrefix(prefix string) {
 
 // Println ...
 func (o *Logger) Println(v ...interface{}) {
+	if !o.logged {
+		return
+	}
 	o.LogCalldepth(3, LoggerLevel5NoColor, fmt.Sprintln(v...))
 }
 
 // Printf ...
 func (o *Logger) Printf(format string, v ...interface{}) {
+	if !o.logged {
+		return
+	}
 	o.LogCalldepth(3, LoggerLevel5NoColor, fmt.Sprintf(format, v...))
 }
 
 // Log0Debug ...
 func (o *Logger) Log0Debug(format string, v ...interface{}) {
+	if !o.logged {
+		return
+	}
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
@@ -177,6 +192,9 @@ func (o *Logger) Log0Debug(format string, v ...interface{}) {
 
 // Log1Warn ...
 func (o *Logger) Log1Warn(format string, v ...interface{}) {
+	if !o.logged {
+		return
+	}
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
@@ -185,6 +203,9 @@ func (o *Logger) Log1Warn(format string, v ...interface{}) {
 
 // Log2Error ...
 func (o *Logger) Log2Error(format string, v ...interface{}) {
+	if !o.logged {
+		return
+	}
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
@@ -193,6 +214,9 @@ func (o *Logger) Log2Error(format string, v ...interface{}) {
 
 // Log3Fatal ...
 func (o *Logger) Log3Fatal(format string, v ...interface{}) {
+	if !o.logged {
+		return
+	}
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
@@ -201,14 +225,20 @@ func (o *Logger) Log3Fatal(format string, v ...interface{}) {
 
 // Log4Trace ...
 func (o *Logger) Log4Trace(format string, v ...interface{}) {
+	if !o.logged {
+		return
+	}
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
 	o.LogCalldepth(3, LoggerLevel4Trace, fmt.Sprintf(format, v...))
 }
 
-// Log5NoFormat ...
+// Log5NoColor ...
 func (o *Logger) Log5NoColor(format string, v ...interface{}) {
+	if !o.logged {
+		return
+	}
 	if !strings.Contains(format, "%v") && len(v) > 0 {
 		format += strings.Repeat("%v", len(v))
 	}
