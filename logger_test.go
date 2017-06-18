@@ -2,7 +2,9 @@ package logger
 
 import (
 	"log"
+	"strings"
 	"testing"
+	"time"
 )
 
 func TestNewLogger(t *testing.T) {
@@ -27,4 +29,14 @@ func TestNewLogger(t *testing.T) {
 
 	l2.SetFlag(log.Ltime | log.Lshortfile)
 	l2.Println("Println")
+}
+
+func TestPipe(t *testing.T) {
+	l := NewLogger(0, "", "/tmp/l-%v.log")
+	l.SetPipe("/tmp/abc")
+	for {
+		s := strings.Repeat(time.Now().Format("2006-01-02 15:04:05"), 100)
+		l.Printf(s)
+		time.Sleep(time.Second)
+	}
 }

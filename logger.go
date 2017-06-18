@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -23,7 +25,7 @@ const (
 	LoggerLevel3Fatal
 	// LoggerLevel4Trace 打印信息
 	LoggerLevel4Trace
-	// LoggerLevel5NoFormat 无格式信息
+	// LoggerLevel5NoColor 无格式信息
 	LoggerLevel5NoColor
 	// LoggerLevel6Off 关闭信息
 	LoggerLevel6Off
@@ -38,6 +40,10 @@ type Logger struct {
 	level      int
 	prefix     string
 	lock       sync.Mutex
+
+	// fifo
+	pipe     *os.File
+	logCache chan string
 
 	// 是否在记录日志
 	logged bool
@@ -106,6 +112,12 @@ func (o *Logger) nextLogFile() {
 
 // LogCalldepth ...
 func (o *Logger) LogCalldepth(calldepth int, level int, msg ...interface{}) {
+	if o.pipe != nil {
+		select {
+		case o.logCache <- msg[0].(string):
+		default:
+		}
+	}
 	if !o.logged {
 		return
 	}
@@ -243,4 +255,34 @@ func (o *Logger) Log5NoColor(format string, v ...interface{}) {
 		format += strings.Repeat("%v", len(v))
 	}
 	o.LogCalldepth(3, LoggerLevel5NoColor, fmt.Sprintf(format, v...))
+}
+
+// SetPipe ...
+func (o *Logger) SetPipe(filePath string) error {
+	if o.pipe != nil {
+		return errors.New("pipe exists")
+	}
+	if err := syscall.Unlink(filePath); err != nil {
+		return err
+	}
+	if err := syscall.Mkfifo(filePath, 0666); err != nil {
+		return err
+	}
+	// syscall.Mknod(filePath, syscall.S_IFIFO|0666, 0)
+
+	logFile, err := os.OpenFile(filePath, os.O_RDWR|os.O_SYNC, os.ModeNamedPipe)
+	if err != nil {
+		return err
+	}
+
+	o.pipe = logFile
+	o.logCache = make(chan string, 10000)
+	go func() {
+		for {
+			if _, err := o.pipe.WriteString(<-o.logCache); err != nil {
+				break
+			}
+		}
+	}()
+	return nil
 }
