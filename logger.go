@@ -136,6 +136,20 @@ func (o *Logger) Printf(format string, v ...interface{}) {
 	o.LogCalldepth(3, fmt.Sprintf(format, v...))
 }
 
+// Panicf is equivalent to Printf() followed by a call to panic().
+func (o *Logger) Panicf(format string, v ...interface{}) {
+	s := fmt.Sprintf(format, v...)
+	o.LogCalldepth(3, s)
+	panic(s)
+}
+
+// Panicln is equivalent to Println() followed by a call to panic().
+func (o *Logger) Panicln(v ...interface{}) {
+	s := fmt.Sprintln(v...)
+	o.LogCalldepth(3, s)
+	panic(s)
+}
+
 // SetPipe ...
 func (o *Logger) SetPipe(filePath string) error {
 	if o.pipe != nil {
