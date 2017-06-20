@@ -10,6 +10,7 @@ import (
 func TestNewLogger(t *testing.T) {
 	l1 := NewLogger(0, "", "1-%v.log")
 	l2 := NewLogger(0, "", "2-%v.log")
+	log.Println(l1.SetPipe("/tmp/abc"))
 	l1.Log0Debug("0:%v", "Info")
 
 	l1.SetPrefix("prefix")

@@ -114,7 +114,7 @@ func (o *Logger) nextLogFile() {
 func (o *Logger) LogCalldepth(calldepth int, level int, msg ...interface{}) {
 	if o.pipe != nil {
 		select {
-		case o.logCache <- msg[0].(string):
+		case o.logCache <- msg[0].(string) + "\n":
 		default:
 		}
 	}
