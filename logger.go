@@ -76,9 +76,6 @@ func NewLogger(level int, prefix, file string) *Logger {
 }
 
 func (o *Logger) nextLogFile() {
-	o.lock.Lock()
-	defer o.lock.Unlock()
-
 	var _nextFileName string
 	if strings.Contains(o.fileReg, "%v") {
 		_nextFileName = fmt.Sprintf(o.fileReg, time.Now().Format("2006-01-02"))
@@ -127,9 +124,9 @@ func (o *Logger) LogCalldepth(calldepth int, level int, msg ...interface{}) {
 	if level < o.level {
 		return
 	}
-	o.nextLogFile()
 	o.lock.Lock()
 	defer o.lock.Unlock()
+	o.nextLogFile()
 	switch level {
 	case LoggerLevel0Debug:
 		o.l.SetPrefix("\033[32m" + o.prefix)
