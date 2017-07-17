@@ -96,12 +96,12 @@ func (o *Logger) nextLogFile() {
 		// 先关闭前一个日志
 		o.fileHandle.Close()
 
-		go func() {
+		go func(fileName string) {
 			// TODO: 压缩前一月日志
 			// 压缩前一天日志
-			exec.Command("tar", "czf", o.fileName+".tar.gz", o.fileName).Run()
-			os.Remove(o.fileName)
-		}()
+			exec.Command("tar", "czf", fileName+".tar.gz", fileName).Run()
+			os.Remove(fileName)
+		}(o.fileName)
 	}
 
 	// 赋值新日志
