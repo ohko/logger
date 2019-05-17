@@ -30,7 +30,7 @@ func NewLogger() *Logger {
 	return &Logger{
 		color: true,
 		level: 1,
-		l:     log.New(os.Stdout, "", log.Ltime|log.Lshortfile),
+		l:     log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile),
 	}
 }
 
@@ -70,8 +70,8 @@ func (o *Logger) SetColor(enable bool) {
 	o.color = enable
 }
 
-// SetFlag ...
-func (o *Logger) SetFlag(flag int) {
+// SetFlags ...
+func (o *Logger) SetFlags(flag int) {
 	o.l.SetFlags(flag)
 }
 
@@ -91,26 +91,26 @@ func (o *Logger) SetOutput(w io.Writer) {
 }
 
 // Log0Debug ...
-func (o *Logger) Log0Debug(format string, v ...interface{}) {
-	o.LogCalldepth(3, LoggerLevel1Debug, fmt.Sprintf(format, v...))
+func (o *Logger) Log0Debug(v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevel1Debug, fmt.Sprintln(v...))
 }
 
 // Log1Warn ...
-func (o *Logger) Log1Warn(format string, v ...interface{}) {
-	o.LogCalldepth(3, LoggerLevel2Warning, fmt.Sprintf(format, v...))
+func (o *Logger) Log1Warn(v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevel2Warning, fmt.Sprintln(v...))
 }
 
 // Log2Error ...
-func (o *Logger) Log2Error(format string, v ...interface{}) {
-	o.LogCalldepth(3, LoggerLevel3Error, fmt.Sprintf(format, v...))
+func (o *Logger) Log2Error(v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevel3Error, fmt.Sprintln(v...))
 }
 
 // Log3Fatal ...
-func (o *Logger) Log3Fatal(format string, v ...interface{}) {
-	o.LogCalldepth(3, LoggerLevel4Fatal, fmt.Sprintf(format, v...))
+func (o *Logger) Log3Fatal(v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevel4Fatal, fmt.Sprintln(v...))
 }
 
 // Log4Trace ...
-func (o *Logger) Log4Trace(format string, v ...interface{}) {
-	o.LogCalldepth(3, LoggerLevel5Trace, fmt.Sprintf(format, v...))
+func (o *Logger) Log4Trace(v ...interface{}) {
+	o.LogCalldepth(3, LoggerLevel5Trace, fmt.Sprintln(v...))
 }
