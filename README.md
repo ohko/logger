@@ -1,4 +1,4 @@
-[![github.com/ohko/o2o](https://goreportcard.com/badge/github.com/ohko/o2o)](https://goreportcard.com/report/github.com/ohko/o2o)
+[![github.com/ohko/logger](https://goreportcard.com/badge/github.com/ohko/logger)](https://goreportcard.com/report/github.com/ohko/logger)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ab57f8d1f67b47699af16eafc089f8bf)](https://www.codacy.com/app/ohko/logger?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ohko/logger&amp;utm_campaign=Badge_Grade)
 
 # 日志打印管理
