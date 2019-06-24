@@ -108,6 +108,7 @@ func (o *Logger) Log2Error(v ...interface{}) {
 // Log3Fatal ...
 func (o *Logger) Log3Fatal(v ...interface{}) {
 	o.LogCalldepth(3, LoggerLevel3Fatal, fmt.Sprintln(v...))
+	os.Exit(1)
 }
 
 // Log4Trace ...
