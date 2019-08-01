@@ -27,13 +27,18 @@ type Logger struct {
 }
 
 // NewLogger ...
-func NewLogger() *Logger {
-	l, _ := strconv.Atoi(os.Getenv("LOG_LEVEL"))
-	return &Logger{
-		color: true,
-		level: l,
-		l:     log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile),
+func NewLogger(out io.Writer) *Logger {
+	level, _ := strconv.Atoi(os.Getenv("LOG_LEVEL"))
+	if out == nil {
+		out = os.Stdout
 	}
+
+	o := &Logger{
+		color: true,
+		level: level,
+		l:     log.New(out, "", log.Ldate|log.Ltime|log.Lshortfile),
+	}
+	return o
 }
 
 // LogCalldepth ...
