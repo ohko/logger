@@ -11,8 +11,9 @@ import (
 
 // DefaultWriter ...
 type DefaultWriter struct {
-	cur   io.Writer
-	clone io.Writer
+	fileHandle io.Writer
+	lastHandle *os.File
+	clone      io.Writer
 }
 
 // NewDefaultWriter ...
@@ -44,16 +45,27 @@ func (o *DefaultWriter) next() {
 		return
 	}
 
+	// 一分钟后关闭文件句柄
+	if o.lastHandle != nil {
+		oldnc := o.lastHandle
+		go func(f *os.File) {
+			time.Sleep(time.Minute)
+			f.Close()
+		}(oldnc)
+	}
+
+	// 设置新文件句柄
+	o.lastHandle = nc
 	if o.clone != nil {
-		o.cur = io.MultiWriter(nc, o.clone)
+		o.fileHandle = io.MultiWriter(nc, o.clone)
 	} else {
-		o.cur = nc
+		o.fileHandle = nc
 	}
 }
 
 func (o *DefaultWriter) Write(p []byte) (n int, err error) {
-	if o.cur == nil {
+	if o.fileHandle == nil {
 		return 0, errors.New("io nil error")
 	}
-	return o.cur.Write(p)
+	return o.fileHandle.Write(p)
 }

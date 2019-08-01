@@ -3,15 +3,16 @@ package logger
 import (
 	"fmt"
 	"log"
+	"os"
 	"testing"
 	"time"
 )
 
 func TestNewLogger(t *testing.T) {
-	// l1 := NewLogger(NewDefaultWriter(os.Stdout))
+	l1 := NewLogger(NewDefaultWriter(os.Stdout))
 	// l1 := NewLogger(NewDefaultWriter(nil))
 	// l1 := NewLogger(os.Stdout)
-	l1 := NewLogger(nil)
+	// l1 := NewLogger(nil)
 	// l1.SetLevel(LoggerLevel3Fatal)
 	l1.SetPrefix("L1")
 
