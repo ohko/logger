@@ -37,7 +37,7 @@ func NewDefaultWriter(clone io.Writer) *DefaultWriter {
 }
 
 func (o *DefaultWriter) next() {
-	f := "./log/" + time.Now().Format("2006/2006-01-02") + ".log"
+	f := "./log/" + time.Now().Format("2006/01/2006-01-02") + ".log"
 	os.MkdirAll(filepath.Dir(f), 0755)
 	nc, err := os.OpenFile(f, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
