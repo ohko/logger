@@ -14,12 +14,12 @@ ll := NewLogger(nil)
 // 指定输出设备为os.Stdout
 ll := NewLogger(os.Stdout)
 // 使用内置的按日切割输出到文件
-ll := NewLogger(NewDefaultWriter(nil))
+ll := NewLogger(NewDefaultWriter(nil, "", ""))
 // 内置的基础上同时显示在os.Stdout
-ll := NewLogger(NewDefaultWriter(os.Stdout))
+ll := NewLogger(NewDefaultWriter(os.Stdout, "label", "name_"))
 
 // 自定义压缩/删除模式
-ndw := NewDefaultWriter(os.Stdout)
+ndw := NewDefaultWriter(os.Stdout, "label", "name_")
 // 日志按月压缩，保留近1个月的压缩日志，往期日志删除
 ndw.SetCompressMode(ModeMonth, 0, 1)
 // 日志按月压缩，保留近3个月的压缩日志，往期日志删除
