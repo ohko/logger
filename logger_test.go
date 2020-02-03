@@ -10,7 +10,9 @@ import (
 )
 
 func TestNewLogger(t *testing.T) {
-	l1 := NewLogger(NewDefaultWriter(os.Stdout, "lable", "name_"))
+	log.SetFlags(log.Llongfile)
+
+	l1 := NewLogger(NewDefaultWriter(&DefaultWriterOption{Clone: os.Stdout, Path: "./log", Label: "lable", Name: "name_"}))
 	// l1 := NewLogger(NewDefaultWriter(nil))
 	// l1 := NewLogger(os.Stdout)
 	// l1 := NewLogger(nil)

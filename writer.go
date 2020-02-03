@@ -20,22 +20,32 @@ const (
 type DefaultWriter struct {
 	fileHandle io.Writer
 	lastHandle *os.File
-	clone      io.Writer
 
 	compressMode  string // 日志压缩模式 [month|day]
 	compressCount int    // 日志压缩前几次 month模式只支持压缩上个月，day支持大于等于1的数字
 	compressKeep  int    // 前多少次的压缩文件删除掉，支持month和day模式
-	label         string // 日志标签
-	name          string // 日志文件名
+	option        *DefaultWriterOption
+}
+
+// DefaultWriterOption ...
+type DefaultWriterOption struct {
+	Clone io.Writer // 日志克隆输出接口
+	Path  string    // 日志目录，默认目录：./log
+	Label string    // 日志标签
+	Name  string    // 日志文件名
 }
 
 // NewDefaultWriter ...
-func NewDefaultWriter(clone io.Writer, label, name string) *DefaultWriter {
-	o := new(DefaultWriter)
-	o.clone = clone
-	o.name = name
-	if label != "" {
-		o.label = "/" + label
+func NewDefaultWriter(option *DefaultWriterOption) *DefaultWriter {
+	o := &DefaultWriter{option: option}
+	if o.option == nil {
+		o.option = &DefaultWriterOption{Path: "./log"}
+	}
+	if o.option.Path == "" {
+		o.option.Path = "./log"
+	}
+	if o.option.Label != "" {
+		o.option.Label = "/" + o.option.Label
 	}
 	o.next()
 
@@ -66,7 +76,7 @@ func (o *DefaultWriter) SetCompressMode(mode string, count, keep int) {
 }
 
 func (o *DefaultWriter) next() {
-	f := "./log" + o.label + time.Now().Format("/2006/01/") + o.name + time.Now().Format("2006-01-02") + ".log"
+	f := o.option.Path + o.option.Label + time.Now().Format("/2006/01/") + o.option.Name + time.Now().Format("2006-01-02") + ".log"
 	os.MkdirAll(filepath.Dir(f), 0755)
 	nc, err := os.OpenFile(f, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
@@ -85,8 +95,8 @@ func (o *DefaultWriter) next() {
 
 	// 设置新文件句柄
 	o.lastHandle = nc
-	if o.clone != nil {
-		o.fileHandle = io.MultiWriter(nc, o.clone)
+	if o.option.Clone != nil {
+		o.fileHandle = io.MultiWriter(nc, o.option.Clone)
 	} else {
 		o.fileHandle = nc
 	}
@@ -105,13 +115,13 @@ func (o *DefaultWriter) backend() {
 		// 每个月的第一天压缩上个月日志
 		if o.compressMode == ModeMonth && time.Now().Format("02 15:04") == "01 00:00" {
 			go func() {
-				if err := compressAndRemoveDir("./log"+o.label+t1.Format("/2006/01/"), "./log"+o.label+t1.Format("/2006/2006-01.zip")); err != nil {
+				if err := compressAndRemoveDir(o.option.Path+o.option.Label+t1.Format("/2006/01/"), o.option.Path+o.option.Label+t1.Format("/2006/2006-01.zip")); err != nil {
 					log.Println(err)
 				}
 
 				// 删除过期日志
 				if o.compressKeep > 0 {
-					zipFile := "./log" + o.label + subMoth(time.Now(), o.compressKeep).Format("/2006/2006-01.zip")
+					zipFile := o.option.Path + o.option.Label + subMoth(time.Now(), o.compressKeep).Format("/2006/2006-01.zip")
 					if err := os.RemoveAll(zipFile); err != nil {
 						log.Println(err)
 					}
@@ -123,8 +133,8 @@ func (o *DefaultWriter) backend() {
 		if o.compressMode == ModeDay && o.compressCount >= 1 {
 			go func() {
 				t := time.Now().Add(-time.Hour * time.Duration(24*o.compressCount))
-				logFile := "./log" + o.label + t.Format("/2006/01/") + o.name + t.Format("2006-01-02.log")
-				zipFile := "./log" + o.label + t.Format("/2006/01/") + o.name + t.Format("2006-01-02.zip")
+				logFile := o.option.Path + o.option.Label + t.Format("/2006/01/") + o.option.Name + t.Format("2006-01-02.log")
+				zipFile := o.option.Path + o.option.Label + t.Format("/2006/01/") + o.option.Name + t.Format("2006-01-02.zip")
 				if err := compressAndRemoveFile(logFile, zipFile); err != nil {
 					log.Println(err)
 				}
@@ -132,7 +142,7 @@ func (o *DefaultWriter) backend() {
 				// 删除过期日志
 				if o.compressKeep > 0 {
 					t := time.Now().Add(-time.Hour * time.Duration(24*(o.compressKeep+1)))
-					zipFile := "./log" + o.label + t.Format("/2006/01/") + o.name + t.Format("2006-01-02.zip")
+					zipFile := o.option.Path + o.option.Label + t.Format("/2006/01/") + o.option.Name + t.Format("2006-01-02.zip")
 					if err := os.RemoveAll(zipFile); err != nil {
 						log.Println(err)
 					}
