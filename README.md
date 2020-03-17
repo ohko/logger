@@ -2,13 +2,13 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ab57f8d1f67b47699af16eafc089f8bf)](https://www.codacy.com/app/ohko/logger?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ohko/logger&amp;utm_campaign=Badge_Grade)
 
 # 日志打印管理
--  通过环境变量`LOG_LEVEL`可控制日志的输出等级
--  支持不同等级日志颜色输出
--  自定义输出终端
--  自定义压缩按月/按日模式
--  自定义过期日志删除
--  fork子Logger对象
--  启动HTTP监听，动态调整LOG_LEVEL
+- 通过环境变量`LOG_LEVEL`可控制日志的输出等级
+- 支持不同等级日志颜色输出
+- 自定义输出终端
+- 自定义压缩按月/按日模式
+- 自定义过期日志删除
+- fork子Logger对象
+- 启动HTTP监听，动态调整LOG_LEVEL
 
 ```golang
 // 默认仅显示在os.Stdout
