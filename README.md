@@ -7,6 +7,8 @@
 -  自定义输出终端
 -  自定义压缩按月/按日模式
 -  自定义过期日志删除
+-  fork子Logger对象
+-  启动HTTP监听，动态调整LOG_LEVEL
 
 ```golang
 // 默认仅显示在os.Stdout
