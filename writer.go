@@ -158,7 +158,7 @@ func compressAndRemoveDir(dir, zipFile string) error {
 	defer w.Close()
 
 	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
+		if info != nil && !info.IsDir() {
 			fDest, err := w.Create(info.Name())
 			if err != nil {
 				return err
