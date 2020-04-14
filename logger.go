@@ -53,6 +53,7 @@ func NewLogger(out io.Writer) *Logger {
 			LoggerLevelNormal:   "",
 		},
 	}
+	o.updatePrefix()
 	return o
 }
 
