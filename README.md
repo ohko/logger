@@ -9,6 +9,7 @@
 - 自定义过期日志删除
 - fork子Logger对象
 - 启动HTTP监听，动态调整LOG_LEVEL
+- 日志目录监控器
 
 ```golang
 // 默认仅显示在os.Stdout
