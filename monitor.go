@@ -2,8 +2,11 @@ package logger
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"net/http"
 	"net/mail"
 	"net/smtp"
 	"strings"
@@ -18,7 +21,10 @@ type MonitorOption struct {
 	LogPath        string        // 日志目录
 	MaxSize        int64         // 日志目录最大磁盘占用字节数
 	NotifyRate     time.Duration // 通知频率
-	NotifyCallback func() error  // 达到最大占用数量时，回调通知函数
+	CustomCallback func() error  // 达到最大占用数量时，回调通知函数
+
+	// 钉钉webhook通知
+	DingDing string // webook地址
 
 	// Email setting
 	MailAddr string // 邮件服务器SSL地址
@@ -46,15 +52,15 @@ func (o *Monitor) monitor() {
 		rate = time.Minute
 	}
 	for {
-		time.Sleep(rate)
 		size := o.GetSize(o.option.LogPath)
 		if size > o.option.MaxSize {
-			if o.option.NotifyCallback != nil {
-				o.option.NotifyCallback()
+			if o.option.CustomCallback != nil {
+				o.option.CustomCallback()
 			} else {
 				o.NotifyCallback(o.option.ID, size)
 			}
 		}
+		time.Sleep(rate)
 	}
 }
 
@@ -77,6 +83,43 @@ func (o *Monitor) GetSize(dirPath string) int64 {
 
 // NotifyCallback ...
 func (o *Monitor) NotifyCallback(id int, size int64) error {
+	if o.option.MailAddr != "" && o.option.MailUser != "" && o.option.MailPass != "" && o.option.MailName != "" {
+		return o.emailCallback(id, size)
+	}
+	if o.option.DingDing != "" {
+		return o.dingdingCallback(id, size)
+	}
+	return nil
+}
+func (o *Monitor) dingdingCallback(id int, size int64) error {
+	st := struct {
+		MsgType string `json:"msgtype"`
+		Text    struct {
+			Content string `json:"content"`
+		} `json:"text"`
+	}{}
+
+	st.MsgType = "text"
+	st.Text.Content = fmt.Sprintf("[LOGGER]ID: %d, Size: %.3fMB", id, float64(size)/1024/1024)
+	url := o.option.DingDing
+	msg, _ := json.Marshal(&st)
+	body := string(msg)
+
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", url, strings.NewReader(body))
+	if err != nil {
+		return err
+	}
+	log.Println("DingDing:", url, body)
+	req.Header.Set("Content-Type", "application/json")
+	_, err = client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (o *Monitor) emailCallback(id int, size int64) error {
 	html := true
 	mailAddr := o.option.MailAddr
 	mailUser := o.option.MailUser
